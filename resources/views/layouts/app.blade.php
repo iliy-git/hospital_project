@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .main-content {
-            margin-right: 340px;
+            /*margin-right: 340px;*/
         }
     </style>
 </head>
@@ -49,20 +49,78 @@
 
 
 
-<div class="container mt-4 main-content">
+<div class="main-content">
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
-    <div class="align-items-start">
-        @yield('advertising_left')
-    </div>
+        @php
+            $hasLeftAd = View::hasSection('advertising_left');
+            $hasRightAd = View::hasSection('advertising_right');
+        @endphp
 
-    @yield('content')
-    @yield('advertising_right')
+        <div class="d-flex justify-content-between p-2">
+            @if($hasLeftAd)
+                <div class="align-items-start">
+                    @yield('advertising_left')
+                </div>
+            @endif
+
+            <div class="align-items-center flex-grow-1">
+                @yield('content')
+            </div>
+
+            @if($hasRightAd)
+                <div class="align-items-end">
+                    @yield('advertising_right')
+                </div>
+            @endif
+        </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).on('click', '.bugs', function () {
+        window.location.href = 'https://store.steampowered.com/app/367520/Hollow_Knight/';
+    });
+    $(document).on('click', '.boks', function () {
+        window.location.href = 'https://dzen.ru/a/aNP3LFGJH2kLca98/';
+    });
+    $(document).on('click', '.alabuga', function () {
+        window.location.href = 'https://polytech.alabuga.ru/';
+    });
+    $(document).on('click', '.driver', function () {
+        window.location.href = 'https://www.nvidia.com/en-eu/geforce/drivers/';
+    });
+    $(document).on('click', '.beer-craft', function () {
+        window.location.href = 'https://baltika4you.ru/';
+    });
+    $(document).on('click', '.secret', function () {
+        window.location.href = 'https://www.forbes.ru/forbeslife-photogallery/240206-14-sekretov-dolgoletiya-ot-samyh-staryh-lyudey-planety';
+    });
+    $(document).on('click', '.money', function () {
+        window.location.href = 'https://1xbet-kz.bet/ru/';
+    });
+    $(document).on('click', '.terapiya', function () {
+        window.location.href = 'https://remedium.ru/news/urinoterapiya-drevnyaya-prakti/';
+    });
+    $(document).on('click', '.help', function () {
+        window.location.href = 'https://krasnoeibeloe.ru/';
+    });
+    $(document).on('click', '.library', function () {
+        window.location.href = 'https://www.rsl.ru/';
+    });
+    $(document).on('click', '.samokat', function () {
+        window.location.href = 'https://samokat-clever.ru/';
+    });
+    $(document).on('click', '.infocigan', function () {
+        window.location.href = 'https://minjust.gov.ru/ru/pages/reestr-inostryannykh-agentov/';
+    });
+    $(document).on('click', '.lavka', function () {
+        window.location.href = 'https://yandekslavka.ru/';
+    });
+</script>
 </body>
 </html>
