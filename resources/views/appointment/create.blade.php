@@ -34,12 +34,39 @@
                         </div>
 
                         <div class="mb-3" id="dateSection" style="display: none;">
-                            <label for="record_date" class="form-label">Дата и время приема</label>
-                            <input type="datetime-local" class="form-control" id="record_date" name="record_date"
-                                   min="{{ now()->addDay()->format('Y-m-d\T08:00') }}"
-                                   max="{{ now()->addMonth()->format('Y-m-d\T18:00') }}" required>
-                            <div class="form-text">Запись доступна с завтрашнего дня</div>
+                            <label class="form-label">Дата и время приема</label>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="record_day" class="form-label">Дата</label>
+                                    <select class="form-control" id="record_day" required>
+                                        <option value="">Выберите дату</option>
+                                        @for ($day = now()->addDay(); $day <= now()->addMonth(); $day->addDay())
+                                            <option value="{{ $day->format('Y-m-d') }}">
+                                                {{ $day->format('d.m.Y') }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="record_time" class="form-label">Время</label>
+                                    <select class="form-control" id="record_time" required>
+                                        <option value="">Выберите время</option>
+                                        @for ($hour = 8; $hour <= 17; $hour++)
+                                            <option value="{{ sprintf('%02d:00', $hour) }}">
+                                                {{ sprintf('%02d:00', $hour) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Это скрытое поле, которое будет объединённым значением -->
+                            <input type="hidden" id="record_date" name="record_date" required>
+
+                            <div class="form-text mt-2">Доступно только с 08:00 до 17:00, начиная с завтрашнего дня</div>
                         </div>
+
 
                         <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
                             Записаться на прием
@@ -99,6 +126,52 @@
         `).show();
 
                 $('#dateSection, #submitBtn').show();
+            });
+
+            function updateRecordDate() {
+                const day = $('#record_day').val();
+                const time = $('#record_time').val();
+
+                if (day && time) {
+                    $('#record_date').val(`${day}T${time}`);
+                } else {
+                    $('#record_date').val('');
+                }
+            }
+
+            function loadAvailableTimes() {
+                const doctorId = $('#doctor_id').val();
+                const selectedDate = $('#record_day').val();
+
+                if (!doctorId || !selectedDate) {
+                    $('#record_time').html('<option value="">Выберите время</option>');
+                    return;
+                }
+
+                $.get('/doctor-busy-hours', {
+                    doctor_id: doctorId,
+                    date: selectedDate
+                }, function (busyHours) {
+                    const timeSelect = $('#record_time');
+                    timeSelect.html('<option value="">Выберите время</option>');
+
+                    for (let hour = 8; hour <= 17; hour++) {
+                        const time = `${String(hour).padStart(2, '0')}:00`;
+                        if (!busyHours.includes(time)) {
+                            timeSelect.append(`<option value="${time}">${time}</option>`);
+                        }
+                    }
+                });
+            }
+
+            $('#record_day, #record_time').on('change', updateRecordDate);
+
+            $('#record_day').on('change', loadAvailableTimes);
+
+            $('#doctor_id').on('change', function () {
+                $('#record_time').html('<option value="">Выберите время</option>');
+                $('#record_day').val('');
+                $('#record_date').val('');
             });
 
             $('#appointmentForm').submit(function(e) {

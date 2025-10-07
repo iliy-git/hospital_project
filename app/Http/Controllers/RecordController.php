@@ -152,4 +152,22 @@ class RecordController extends Controller
 
         return view('records.my', compact('records'));
     }
+
+    public function getDoctorBusyHours(Request $request)
+    {
+        $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+            'date' => 'required|date_format:Y-m-d',
+        ]);
+
+        $busyTimes = Record::where('doctor_id', $request->doctor_id)
+            ->whereDate('record_date', $request->date)
+            ->pluck('record_date')
+            ->map(function ($datetime) {
+                return $datetime->format('H:i');
+            });
+
+        return response()->json($busyTimes);
+    }
+
 }

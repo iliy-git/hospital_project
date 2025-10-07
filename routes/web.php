@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/appointment', [RecordController::class, 'storeAppointment'])->name('appointment.store');
     Route::get('/my-records', [RecordController::class, 'myRecords'])->name('records.my');
     Route::get('/get-doctors/{postId}', [RecordController::class, 'getDoctorsByPost'])->name('doctors.by.post');
+    Route::get('/doctor-busy-hours', [RecordController::class, 'getDoctorBusyHours']);
 });
 
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
